@@ -1,0 +1,5 @@
+%Nadajnik 
+n = 1;
+m = 10;
+source_of_users_data = randi([0 1],n,m) ;
+
