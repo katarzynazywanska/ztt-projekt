@@ -1,11 +1,17 @@
+clc
+clear
 %Nadajnik, 
 
 % 1. wariant a 
-n = 1;
-m = 10;
-source_of_users_data = randi([0 1],n,m) 
+m = 1;
+n = 100;
+users_data = randi([0 1],n,m) %wektor m losowych wartości binarnych 
 
-V = [1 0 1 1]; 
-poly(V);
-input = [source_of_users_data 0 0 0]
-output = deconv(input,V)
+
+%CRC
+poly = hexToBinaryVector('104C11DB7');
+crc32 = comm.CRCGenerator('Polynomial',...
+    'z^32 + z^26 + z^23 + z^22 + z^16 + z^12 + z^11 + z^10 + z^8 + z^7 + z^5 + z^4 + z^2 + z + 1',...
+    'InitialConditions',1,'DirectMethod',true,'FinalXOR',1); %32-bit CRC
+us_data_with_crc32 = crc32(users_data); %wektor danych wejściowych + 32 bity crc
+
