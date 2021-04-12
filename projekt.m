@@ -102,5 +102,9 @@ oversampling = upsample(us_data_with_crc32,4);
 %                 ii) Bitowy
 
 % a)
-demodbits = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Hard')
-numErr = biterr(us_data_with_crc32,demodbits)
+demodbitsHARD = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Hard')
+numErrHARD = biterr(us_data_with_crc32,demodbitsHARD)
+% b) podpunkt b) trudniejszy i jeszcze nie wiem jak go zrobić xD
+% i)
+demodbitsSOFT = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Soft')
+%numErrSOFT = biterr(users_data,demodbitsSOFT)
