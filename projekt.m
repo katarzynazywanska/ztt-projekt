@@ -100,7 +100,7 @@ oversampling = upsample(us_data_with_crc32,4);
 %             b) Demodulator miękko decyzyjny
 %                 i) Symbolowy
 %                 ii) Bitowy
-
+% SPRAWDZIĆ https://www.mathworks.com/help/5g/ref/nrsymboldemodulate.html#mw_c0794fcb-cfe3-43dd-9310-4e22dd106c82
 % a)
 demodbitsHARD = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Hard')
 numErrHARD = biterr(us_data_with_crc32,demodbitsHARD)
