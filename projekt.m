@@ -18,8 +18,9 @@ R = length(users_data)/length(us_data_with_crc32);
 %                   Additive (synchronous) scramblers: https://en.wikipedia.org/wiki/Scrambler
 
 % a):
+m = 1;
 n = 50000; % n = 500, 5000, 50000
-users_data = randi([0 1],n,1); %wektor m losowych wartości binarnych 
+users_data = randi([0 1],n,m); %wektor m losowych wartości binarnych 
 
 % 2. Kodowanie detekcyjne CRC
 % Na wektorze danych należy wyliczyć 32 bitową sumę kontrolna CRC za pomocą standardowego wielomianu 
@@ -74,3 +75,27 @@ scatterplot(outsignal)
 %-----------------------------------------------------------------------------------------------------------
 
 %Odbiornik
+
+% 1. Demodulacja sygnału
+% Celem demodulacji jest wyznaczenie etykiety nadawanego symbolu 
+% z konstelacji sygnałów na podstawie odebranej próbki lub próbek sygnału. W najprostszym 
+% przypadku demodulator podejmuje decyzje o etykiecie na podstawie kryterium największej 
+% wiarygodności. Należy wyliczyć odległości w przestrzeni sygnału pomiędzy każdym z 
+% sygnałów z konstelacji sygnałów a sygnałem odebranym i wskazać ten o najmniejszej 
+% odległości jako odebrany i zwrócić jego cyfrowa etykietę. Taki demodulator jest nazywany 
+% demodulatorem twardo decyzyjnym. Demodulator zamiast cyfrowej etykiety może zwrócić 
+% wektor współczynników prawdopodobieństwa nadania każdego z elementów konstelacji. Ta 
+% dodatkowa informacja może być używana w procesie dekodowania kodu protekcyjnego. 
+% Mówimy wtedy o demodulatorze miękko decyzyjnym symbolowym. Inna odmiana takiego 
+% demodulatora to demodulator miękko decyzyjny bitowy. Na podstawie odległości pomiędzy 
+% sygnałem odebranym a sygnałem z konstelacji sygnałów, oraz znajomości etykiet tych 
+% sygnałów można wyliczyć współczynniki prawdopodobieństwa dla poszczególnych bitów w 
+% etykiecie sygnału z konstelacji sygnałów.
+%             a) Demodulator twardo decyzyjny
+%             b) Demodulator miękko decyzyjny
+%                 i) Symbolowy
+%                 ii) Bitowy
+
+% a)
+demodbits = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Hard')
+numErr = biterr(us_data_with_crc32,demodbits)
