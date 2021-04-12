@@ -5,7 +5,7 @@ clear
 % Sprawność kodowania R = k/n,
 % k =liczba danych wejściowych, 
 % n - liczba danych wejściowych + bity nadmiarowe,   
-R = length(users_data)/length(us_data_with_crc32); 
+ 
 
 %Nadajnik 
 
@@ -18,9 +18,10 @@ R = length(users_data)/length(us_data_with_crc32);
 %                   Additive (synchronous) scramblers: https://en.wikipedia.org/wiki/Scrambler
 
 % a):
-m = 1;
 n = 50000; % n = 500, 5000, 50000
-users_data = randi([0 1],n,m); %wektor m losowych wartości binarnych 
+users_data = randi([0 1],n,1); %wektor m losowych wartości binarnych 
+
+R = length(users_data)/length(us_data_with_crc32);
 
 % 2. Kodowanie detekcyjne CRC
 % Na wektorze danych należy wyliczyć 32 bitową sumę kontrolna CRC za pomocą standardowego wielomianu 
