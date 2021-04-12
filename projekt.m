@@ -28,7 +28,6 @@ users_data = randi([0 1],n,1); %wektor m losowych wartości binarnych
 % (https://en.wikipedia.org/wiki/Cyclic_redundancy_check ) 
 % !! długość wektora zwiększa się o 32 bity sumy kontrolnej
 
-poly = hexToBinaryVector('104C11DB7');
 crc32 = comm.CRCGenerator('Polynomial',...
     'z^32 + z^26 + z^23 + z^22 + z^16 + z^12 + z^11 + z^10 + z^8 + z^7 + z^5 + z^4 + z^2 + z + 1',...
     'InitialConditions',1,'DirectMethod',true,'FinalXOR',1); %32-bit CRC
