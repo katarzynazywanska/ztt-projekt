@@ -25,7 +25,7 @@ outsignal = awgnchannel(exchange_bytes_to_symbols);
 scatterplot(outsignal);
 
 
-% parametr R = k/n, 
+% Sprawność kodowania R = k/n, 
 % k =liczba danych wejściowych, 
 % n - liczba danych wejściowych + bity nadmiarowe,   
 R = length(users_data)/length(us_data_with_crc32); 
