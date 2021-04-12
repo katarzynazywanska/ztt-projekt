@@ -21,7 +21,6 @@ clear
 n = 50000; % n = 500, 5000, 50000
 users_data = randi([0 1],n,1); %wektor m losowych wartości binarnych 
 
-R = length(users_data)/length(us_data_with_crc32);
 
 % 2. Kodowanie detekcyjne CRC
 % Na wektorze danych należy wyliczyć 32 bitową sumę kontrolna CRC za pomocą standardowego wielomianu 
@@ -34,6 +33,8 @@ crc32 = comm.CRCGenerator('Polynomial',...
     'z^32 + z^26 + z^23 + z^22 + z^16 + z^12 + z^11 + z^10 + z^8 + z^7 + z^5 + z^4 + z^2 + z + 1',...
     'InitialConditions',1,'DirectMethod',true,'FinalXOR',1); %32-bit CRC
 us_data_with_crc32 = crc32(users_data) %wektor danych wejściowych + 32 bity crc
+
+R = length(users_data)/length(us_data_with_crc32);
 
 % 4. Zamiana bitów na symbole oraz modulacja 16-QAM
 % Zamiana bitów na symbole – na tym etapie w zależności od rodzaju modulacji następuje 
