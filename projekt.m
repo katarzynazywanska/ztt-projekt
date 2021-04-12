@@ -73,6 +73,10 @@ awgnchannel.SNR = 20 %??? nie mam bladego pojęcia jakie to SNR powinno być
 outsignal = awgnchannel(exchange_bytes_to_symbols)
 scatterplot(outsignal)
 
+%Obserwacja widma sygnału nadawanego i odbieranego w pasmie podstawowym.
+%oversampling - spowoduje dodanie 4 zer po każdym elemencie wektora
+oversampling = upsample(us_data_with_crc32,4);
+
 %-----------------------------------------------------------------------------------------------------------
 
 %Odbiornik
