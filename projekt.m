@@ -31,7 +31,7 @@ users_data = randi([0 1],n,1); %wektor m losowych wartości binarnych
 crc32 = comm.CRCGenerator('Polynomial',...
     'z^32 + z^26 + z^23 + z^22 + z^16 + z^12 + z^11 + z^10 + z^8 + z^7 + z^5 + z^4 + z^2 + z + 1',...
     'InitialConditions',1,'DirectMethod',true,'FinalXOR',1); %32-bit CRC
-us_data_with_crc32 = crc32(users_data) %wektor danych wejściowych + 32 bity crc
+us_data_with_crc32 = crc32(users_data); %wektor danych wejściowych + 32 bity crc
 
 R = length(users_data)/length(us_data_with_crc32);
 
@@ -41,8 +41,8 @@ R = length(users_data)/length(us_data_with_crc32);
 % itd.) o takiej wartościowości jaka jest wartościowość konstelacji sygnałów. Otrzymujemy 
 % wektor etykiet.
 
-exchange_bytes_to_symbols = nrSymbolModulate(us_data_with_crc32,'16QAM') %efektem tej funkcji jest punkt 5. z opisu
-scatterplot(exchange_bytes_to_symbols)
+exchange_bytes_to_symbols = nrSymbolModulate(us_data_with_crc32,'16QAM'); %efektem tej funkcji jest punkt 5. z opisu
+scatterplot(exchange_bytes_to_symbols);
 
 % 5. Modulacja cyfrowa
 % Na tym etapie mamy wektor liczb (etykiet) z których każda reprezentuje jeden elementów konstelacji sygnałów. 
@@ -66,12 +66,12 @@ scatterplot(exchange_bytes_to_symbols)
 % w dziedzinie czasu wylosowanej próbki zespolonej z generatora o zespolonym rozkładzie 
 % Gausa o wartości średniej 0 i wariancji 1, przeskalowanej liniowo do zadanego poziomu SNR.
 
-awgnchannel = comm.AWGNChannel
-awgnchannel.NoiseMethod = 'Signal to noise ratio (SNR)'
-awgnchannel.SNR = 20 %??? nie mam bladego pojęcia jakie to SNR powinno być
+awgnchannel = comm.AWGNChannel;
+awgnchannel.NoiseMethod = 'Signal to noise ratio (SNR)';
+awgnchannel.SNR = 20; %??? nie mam bladego pojęcia jakie to SNR powinno być
 
-outsignal = awgnchannel(exchange_bytes_to_symbols)
-scatterplot(outsignal)
+outsignal = awgnchannel(exchange_bytes_to_symbols);
+scatterplot(outsignal);
 
 %Obserwacja widma sygnału nadawanego i odbieranego w pasmie podstawowym.
 %oversampling - spowoduje dodanie 4 zer po każdym elemencie wektora
@@ -102,9 +102,9 @@ oversampling = upsample(us_data_with_crc32,4);
 %                 ii) Bitowy
 % SPRAWDZIĆ https://www.mathworks.com/help/5g/ref/nrsymboldemodulate.html#mw_c0794fcb-cfe3-43dd-9310-4e22dd106c82
 % a)
-demodbitsHARD = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Hard')
-numErrHARD = biterr(us_data_with_crc32,demodbitsHARD)
+demodbitsHARD = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Hard');
+numErrHARD = biterr(us_data_with_crc32,demodbitsHARD);
 % b) podpunkt b) trudniejszy i jeszcze nie wiem jak go zrobić xD
 % i)
-demodbitsSOFT = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Soft')
+demodbitsSOFT = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Soft');
 %numErrSOFT = biterr(users_data,demodbitsSOFT)
