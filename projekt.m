@@ -1,6 +1,5 @@
 clc
 clear
-
 % parametr R = k/n,
 % Sprawność kodowania R = k/n,
 % k =liczba danych wejściowych, 
@@ -56,6 +55,9 @@ scatterplot(exchange_bytes_to_symbols);
 %          filtrów dopasowanych w odbiorniku sygnał w całym odstępie modulacji może być 
 %          reprezentowany tą pojedynczą próbka sygnału zespolonego.
 
+%Modulacja OFDM
+% https://www.mathworks.com/help/comm/ref/comm.ofdmmodulator-system-object.html
+
 %-----------------------------------------------------------------------------------------------------------
 
 %Kanał transmisyjny
@@ -68,7 +70,7 @@ scatterplot(exchange_bytes_to_symbols);
 
 awgnchannel = comm.AWGNChannel;
 awgnchannel.NoiseMethod = 'Signal to noise ratio (SNR)';
-awgnchannel.SNR = 20; %??? nie mam bladego pojęcia jakie to SNR powinno być
+awgnchannel.SNR = 10; %??? nie mam bladego pojęcia jakie to SNR powinno być
 
 outsignal = awgnchannel(exchange_bytes_to_symbols);
 scatterplot(outsignal);
@@ -102,9 +104,22 @@ oversampling = upsample(us_data_with_crc32,4);
 %                 ii) Bitowy
 % SPRAWDZIĆ https://www.mathworks.com/help/5g/ref/nrsymboldemodulate.html#mw_c0794fcb-cfe3-43dd-9310-4e22dd106c82
 % a)
-demodbitsHARD = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Hard');
+%disp('Hard')
+demodbitsHARD = nrSymbolDemodulate(outsignal,'16QAM','DecisionType', 'Hard');
 numErrHARD = biterr(us_data_with_crc32,demodbitsHARD);
 % b) podpunkt b) trudniejszy i jeszcze nie wiem jak go zrobić xD
-% i)
-demodbitsSOFT = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Soft');
-%numErrSOFT = biterr(users_data,demodbitsSOFT)
+% i) Symbolowy
+%disp('Soft')
+demodsymbolsSOFT = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Soft');
+%numErrSOFT = biterr(us_data_with_crc32,demodsymbolsSOFT);
+
+% ii) bitowy ???
+%%demodbitsSOFTbites = nrSymbolDemodulate(demodbitsSOFT,'16QAM','DecisionType','Hard')
+demodbitsSOFT = qamdemod(outsignal,16,'OutputType','bit') %raczej na pewno zle
+% wydaje mi sie ze tu moze byc rozwiazanie
+% https://www.mathworks.com/help/comm/ref/qamdemod.html
+%demodbitsSOFT = qamdemod(outsignal,16,'OutputType','approxllr', 'UnitAveragePower',true,'NoiseVariance',noiseVar)
+numErrSOFT = biterr(us_data_with_crc32,demodbitsSOFT)
+
+%OFDM Demodulator
+% https://www.mathworks.com/help/comm/ref/comm.ofdmdemodulator-system-object.html
