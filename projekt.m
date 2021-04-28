@@ -105,21 +105,21 @@ oversampling = upsample(us_data_with_crc32,4);
 % SPRAWDZIĆ https://www.mathworks.com/help/5g/ref/nrsymboldemodulate.html#mw_c0794fcb-cfe3-43dd-9310-4e22dd106c82
 % a)
 %disp('Hard')
-demodbitsHARD = nrSymbolDemodulate(outsignal,'16QAM','DecisionType', 'Hard');
-numErrHARD = biterr(us_data_with_crc32,demodbitsHARD);
+demod_bits_HARD = nrSymbolDemodulate(outsignal,'16QAM','DecisionType', 'Hard');
+BER_hard = biterr(us_data_with_crc32,demod_bits_HARD);
 % b) podpunkt b) trudniejszy i jeszcze nie wiem jak go zrobić xD
 % i) Symbolowy
 %disp('Soft')
-demodsymbolsSOFT = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Soft');
-%numErrSOFT = biterr(us_data_with_crc32,demodsymbolsSOFT);
+demod_symbols_SOFT = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Soft');
+%BER_soft_symbols = biterr(us_data_with_crc32,demod_symbols_SOFT);
 
 % ii) bitowy ???
 %%demodbitsSOFTbites = nrSymbolDemodulate(demodbitsSOFT,'16QAM','DecisionType','Hard')
-demodbitsSOFT = qamdemod(outsignal,16,'OutputType','bit') %raczej na pewno zle
+demod_bits_SOFT = qamdemod(outsignal,16,'OutputType','bit') %raczej na pewno zle
 % wydaje mi sie ze tu moze byc rozwiazanie
 % https://www.mathworks.com/help/comm/ref/qamdemod.html
-%demodbitsSOFT = qamdemod(outsignal,16,'OutputType','approxllr', 'UnitAveragePower',true,'NoiseVariance',noiseVar)
-numErrSOFT = biterr(us_data_with_crc32,demodbitsSOFT)
+%demod_bits_SOFT = qamdemod(outsignal,16,'OutputType','approxllr', 'UnitAveragePower',true,'NoiseVariance',noiseVar)
+BER_soft_bits = biterr(us_data_with_crc32,demod_bits_SOFT)
 
 %OFDM Demodulator
 % https://www.mathworks.com/help/comm/ref/comm.ofdmdemodulator-system-object.html
