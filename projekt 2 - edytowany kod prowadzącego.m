@@ -45,8 +45,8 @@ CRCpoly = 'z^32 + z^26 + z^23 + z^22 + z^16 + z^12 + z^11 + z^10 + z^8 + z^7 + z
 
 % constalation of symbols for 2^M (16-QAM)
 %constelation = [ -1+1i -1-1i 1+1i 1-1i ] * (1/sqrt(2));
-constelation = [-1+1i -1+3i -3+1i -3+3i -1-1i -1-3i -3-1i -3-3i 1+1i 1+3i 3+1i 3+3i 1-1i 1-3i 3-1i 3-3i ]*(1/sqrt(2));
-% constelation = qammod([0 1 2 3],2^M,'gray','UnitAveragePower',true);
+% constelation = [-1+1i -1+3i -3+1i -3+3i -1-1i -1-3i -3-1i -3-3i 1+1i 1+3i 3+1i 3+3i 1-1i 1-3i 3-1i 3-3i ]*(1/sqrt(2));
+constelation = qammod([0 1 2 3],2^M,'gray','UnitAveragePower',true);
 
 
 
@@ -71,8 +71,8 @@ crcdata = generate(CRCgen, data);
 labels = bi2de( reshape( crcdata, M, [] )' );
 
 % labels to complex symbols (M-PSK or M-QAM modulation)
-symbols = constelation( labels + 1)';
-% symbols = qammod(labels,2^M,'gray','UnitAveragePower',true);
+%symbols = constelation( labels + 1)';
+symbols = qammod(labels,2^M,'gray','UnitAveragePower',true);
 
 %------------------------------
 % signal/spectrum plot
