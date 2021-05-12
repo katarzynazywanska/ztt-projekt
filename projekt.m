@@ -1,6 +1,7 @@
 clc
 clear
 fftsize = 1024;
+crcsize = 32;
 % parametr R = k/n,
 % Sprawność kodowania R = k/n,
 % k =liczba danych wejściowych, 
@@ -19,8 +20,11 @@ sps=1;
 %                   Additive (synchronous) scramblers: https://en.wikipedia.org/wiki/Scrambler
 
 % a):
-  n = 500; %n = 50000, 5000, 50000
-users_data = randi([0 1],n,1); %wektor m losowych wartości binarnych 
+  psize = 3;
+   packet_length = [500 5000 50000];
+  
+  
+users_data = randi([0 1],packet_length(psize),1); %wektor m losowych wartości binarnych 
 
 
 % 2. Kodowanie detekcyjne CRC
@@ -90,9 +94,12 @@ drspectrum(txs,0,fftsize,'przed AWGN 16-QAM - ');
 %SNR:
 EbN0=0:1:10;
 snr = EbN0 + 10*log10(log2(M)) - 10*log10(sps)
-%sredniaSNR=(sum(snr))./10
+sredniaSNR=(sum(snr))./11
 
+%eye diagram
 
+eyediagram(real(txs),32,32,0);
+grid;
 
 
 awgnchannel = comm.AWGNChannel;
@@ -161,11 +168,41 @@ demod_symbols_SOFT = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Soft')
 % ii) bitowy ???
 %%demodbitsSOFTbites = nrSymbolDemodulate(demodbitsSOFT,'16QAM','DecisionType','Hard')
 demod_bits_SOFT = qamdemod(outsignal,16,'OutputType','bit') %raczej na pewno zle
-% wydaje mi sie ze tu moze byc rozwiazanie
-% https://www.mathworks.com/help/comm/ref/qamdemod.html
+
 %demod_bits_SOFT = qamdemod(outsignal,16,'OutputType','approxllr', 'UnitAveragePower',true,'NoiseVariance',noiseVar)
 BER_soft_bits = biterr(us_data_with_crc32,demod_bits_SOFT)
 
-%OFDM Demodulator
+%Wykres BER vs. SNR(EbN0)
+berTheory = berawgn(snr,'qam',M);
 
-% https://www.mathworks.com/help/comm/ref/comm.ofdmdemodulator-system-object.html
+
+semilogy(snr,berTheory,'*')
+hold on
+semilogy(snr,berTheory)
+grid
+legend('Estimated BER','Theoretical BER')
+xlabel('Eb/No (dB)')
+ylabel('Bit Error Rate')
+hold off
+figure
+
+
+%FER vs. SNR(EbN0)
+FER= berTheory./packet_length(psize);
+
+semilogy(snr,FER,'*')
+hold on
+semilogy(snr,FER)
+grid
+legend('FER','Theoretical FER')
+xlabel('Eb/No (dB)')
+ylabel('Frame Error Rate')
+hold off
+
+
+
+
+
+
+
+
