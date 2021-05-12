@@ -1,5 +1,6 @@
 clc
 clear
+fftsize = 1024;
 % parametr R = k/n,
 % Sprawność kodowania R = k/n,
 % k =liczba danych wejściowych, 
@@ -41,7 +42,24 @@ R = length(users_data)/length(us_data_with_crc32);
 % wektor etykiet.
 
 exchange_bytes_to_symbols = nrSymbolModulate(us_data_with_crc32,'16QAM'); %efektem tej funkcji jest punkt 5. z opisu
-scatterplot(exchange_bytes_to_symbols);
+%scatterplot(exchange_bytes_to_symbols);
+
+% oversampling
+over_sampling = 16;
+% filtr podniesionego cosinusa
+txs = rcosflt( exchange_bytes_to_symbols.', 1, over_sampling );
+% tail cating
+txs = txs( (3*over_sampling+1):( size(exchange_bytes_to_symbols.',2)*over_sampling + (3*over_sampling) ) );
+% normalizacja energii
+txs = txs .* (1/sqrt(mean(abs(txs).^2))); 
+
+% signal plot
+figure(1);
+h1 = plot(txs);grid;
+figure(2);
+h2 = plot( real(txs(1:(50*over_sampling))) );grid;
+
+drspectrum(txs,0,fftsize,'przed AWGN 16-QAM - ');
 
 % 5. Modulacja cyfrowa
 % Na tym etapie mamy wektor liczb (etykiet) z których każda reprezentuje jeden elementów konstelacji sygnałów. 
@@ -77,7 +95,25 @@ scatterplot(outsignal);
 
 %Obserwacja widma sygnału nadawanego i odbieranego w pasmie podstawowym.
 %oversampling - spowoduje dodanie 4 zer po każdym elemencie wektora
-oversampling = upsample(us_data_with_crc32,4);
+%oversampling = upsample(us_data_with_crc32,4);
+
+% wyświetlanie fft
+% oversampling
+over_sampling = 16;
+% filtr podniesionego cosinusa
+txs = rcosflt( outsignal.', 1, over_sampling );
+% tail cating
+txs = txs( (3*over_sampling+1):( size(outsignal.',2)*over_sampling + (3*over_sampling) ) );
+% normalizacja energii
+txs = txs .* (1/sqrt(mean(abs(txs).^2))); 
+
+% signal plot
+figure(1);
+h1 = plot(txs);grid;
+figure(2);
+h2 = plot( real(txs(1:(50*over_sampling))) );grid;
+
+drspectrum(txs,0,fftsize,'po AWGN 16-QAM - ');
 
 %-----------------------------------------------------------------------------------------------------------
 
