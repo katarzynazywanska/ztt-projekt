@@ -1,4 +1,5 @@
-% Transmiter parameters
+clc
+clear
 
 % packet size
 psize = 2;
@@ -39,13 +40,11 @@ else
    symbolsno = floor((packet_lenght(psize) + crcsize) / M);
 end   
 end
-%
+
 % CRC polynominal
 CRCpoly = 'z^32 + z^26 + z^23 + z^22 + z^16 + z^12 + z^11 + z^10 + z^8 + z^7 + z^5 + z^4 + z^2 + z + 1';
 
 % constalation of symbols for 2^M (16-QAM)
-%constelation = [ -1+1i -1-1i 1+1i 1-1i ] * (1/sqrt(2));
-% constelation = [-1+1i -1+3i -3+1i -3+3i -1-1i -1-3i -3-1i -3-3i 1+1i 1+3i 3+1i 3+3i 1-1i 1-3i 3-1i 3-3i ]*(1/sqrt(2));
 constelation = qammod([0 1 2 3],2^M,'gray','UnitAveragePower',true);
 
 
@@ -57,21 +56,18 @@ constelation = qammod([0 1 2 3],2^M,'gray','UnitAveragePower',true);
 % random data vector
 data = randsrc( packet_lenght(psize), 1, [0 1] );
 
-% CRC generator ( z biblioteki communication )
-% CRCgen = comm.CRCGenerator('Polynomial', CRCpoly);
-% crcdata = CRCgen(data);
 
 CRCgen = crc.generator('Polynomial', '0x04C11DB7', 'InitialState', '0xFFFFFFFF');
 CRCdet = crc.detector('Polynomial', '0x04C11DB7', 'InitialState', '0xFFFFFFFF');
 crcdata = generate(CRCgen, data);
 
-% forward protection encoding
+
 
 % bits to labels
 labels = bi2de( reshape( crcdata, M, [] )' );
 
 % labels to complex symbols (M-PSK or M-QAM modulation)
-%symbols = constelation( labels + 1)';
+;
 symbols = qammod(labels,2^M,'gray','UnitAveragePower',true);
 
 %------------------------------
@@ -96,8 +92,7 @@ xlabel('time');ylabel('U');title('Signal 16-QAM, rised cosinus filter, oversampl
 legend('Re','Im');
 
 % fft spectrum
-% drspectrum(txs ./(over_sampling^2),0,fftsize,'4-PSK - ',3);
-drspectrum(txs ./(over_sampling^2),0,fftsize,'16-QAM - ',3);
+drspectrum2(txs ./(over_sampling^2),0,fftsize,'16-QAM - ',3);
 
 % eye diagram
 eyediagram(real(txs),32,32,0);grid;
@@ -118,8 +113,7 @@ ofdmtimesymbols = ifft( ofdminput,ofdmsize,1);
 chanellinput = reshape( cat(1, ofdmtimesymbols, ofdmtimesymbols(1:guardsamples,:) ), 1, [] );
 
 % OFDM signal spectrum
-% drspectrum(chanellinput' ./(over_sampling^2),0,fftsize, 'OFDM 4-PSK - ',5);
-drspectrum(chanellinput' ./(over_sampling^2),0,fftsize, 'OFDM 16-QAM - ',5);
+drspectrum2(chanellinput' ./(over_sampling^2),0,fftsize, 'OFDM 16-QAM - ',5);
 
 %--------------------------
 % Transmit channel
@@ -131,8 +125,7 @@ out = awgn(chanellinput,snr,'measured');
 %--------------------------
 % Receiver
 %--------------------------
-% drspectrum(out' ./(over_sampling^2),0,fftsize, 'OFDM 4-PSK - ',6);
-drspectrum(out' ./(over_sampling^2),0,fftsize, 'OFDM 16-QAM - ',6);
+drspectrum2(out' ./(over_sampling^2),0,fftsize, 'OFDM 16-QAM - ',6);
 
 % Remove Guard interval and reshape for demodulation
 
@@ -141,15 +134,6 @@ ofdmoutsymbols = fft( ofdmtimesymbols,ofdmsize,1);
 % data symbols sepatation
 ofdmoutdatasymbols = reshape( cat( 1, ofdmoutsymbols(2:(ofdmdatasubsize)/2+1,:), ofdmoutsymbols( ((ofdmsize-(ofdmdatasubsize)/2)+1):ofdmsize,:)),1,[] );
 
-% demodulation
-%rxlabels = qamdemod( ofdmoutdatasymbols, 2^M, 'gray', 'UnitAveragePower',true )'; 
+;
 
-% to bin format
-%rxdatap = reshape(de2bi(rxlabels,M)', [], 1  );
-
-%[rxdata error] = detect(CRCdet, rxdatap );
-
-% count errors
-%nErrors = biterr(data,rxdata);
-%fprintf(sprintf('errors: %d\n',nErrors));
 
