@@ -67,7 +67,7 @@ crcdata = generate(CRCgen, data);
 labels = bi2de( reshape( crcdata, M, [] )' );
 
 % labels to complex symbols (M-PSK or M-QAM modulation)
-;
+
 symbols = qammod(labels,2^M,'gray','UnitAveragePower',true);
 
 %------------------------------
@@ -134,6 +134,5 @@ ofdmoutsymbols = fft( ofdmtimesymbols,ofdmsize,1);
 % data symbols sepatation
 ofdmoutdatasymbols = reshape( cat( 1, ofdmoutsymbols(2:(ofdmdatasubsize)/2+1,:), ofdmoutsymbols( ((ofdmsize-(ofdmdatasubsize)/2)+1):ofdmsize,:)),1,[] );
 
-;
 
 
