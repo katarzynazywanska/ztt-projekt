@@ -6,7 +6,8 @@ fftsize = 1024;
 % k =liczba danych wejściowych, 
 % n - liczba danych wejściowych + bity nadmiarowe,   
  
-
+M=4; 
+sps=1;
 %Nadajnik 
 
 % 1. Źródło danych użytkowych (alternatywnie: a albo b):
@@ -18,7 +19,7 @@ fftsize = 1024;
 %                   Additive (synchronous) scramblers: https://en.wikipedia.org/wiki/Scrambler
 
 % a):
-n = 50000; % n = 500, 5000, 50000
+  n = 500; %n = 50000, 5000, 50000
 users_data = randi([0 1],n,1); %wektor m losowych wartości binarnych 
 
 
@@ -86,9 +87,17 @@ drspectrum(txs,0,fftsize,'przed AWGN 16-QAM - ');
 % w dziedzinie czasu wylosowanej próbki zespolonej z generatora o zespolonym rozkładzie 
 % Gausa o wartości średniej 0 i wariancji 1, przeskalowanej liniowo do zadanego poziomu SNR.
 
+%SNR:
+EbN0=0:1:10;
+snr = EbN0 + 10*log10(log2(M)) - 10*log10(sps)
+%sredniaSNR=(sum(snr))./10
+
+
+
+
 awgnchannel = comm.AWGNChannel;
 awgnchannel.NoiseMethod = 'Signal to noise ratio (SNR)';
-awgnchannel.SNR = 10; %??? nie mam bladego pojęcia jakie to SNR powinno być
+awgnchannel.SNR = 8; 
 
 outsignal = awgnchannel(exchange_bytes_to_symbols);
 scatterplot(outsignal);
@@ -158,4 +167,5 @@ demod_bits_SOFT = qamdemod(outsignal,16,'OutputType','bit') %raczej na pewno zle
 BER_soft_bits = biterr(us_data_with_crc32,demod_bits_SOFT)
 
 %OFDM Demodulator
+
 % https://www.mathworks.com/help/comm/ref/comm.ofdmdemodulator-system-object.html
