@@ -1,28 +1,22 @@
-function h=drspectrum(stream,upsampledfactor,fftsize,header,figureno)
+function y=drspectrum(stream,upsampledfactor,fftsize,header)
 % OFDM signal spectrum
-% function drspectrum(stream,upsampledfactor)
-   if figureno>0
-       h=figure(figureno);
-   else
-       h=figure();
-   end    
+% function dspectrum(stream,upsampledfactor)
+
    if upsampledfactor>1
        x = interp(stream,upsampledfactor);
    else
        x = stream;
    end    
    fftwindows = floor(size(x,1)/fftsize);
-   %window = blackmanharris(fftsize);
-   window = blackman(fftsize);
+   window = blackmanharris(fftsize);
    fftdata = reshape(x(1:(fftsize*fftwindows)),fftsize,fftwindows);
    wx = fftshift( fft( fftdata .* repmat(window, 1, size(fftdata,2)), fftsize) );
-   x = (-1.0):(2/(fftsize-1)):(1.0);
-   %y = 20*log10( mean(abs(wx')) );
-   %plot( x, y, '-b' );
-   y = 20*log10( abs(wx') );
-   plot( x, y, '.b' );
+   y = 20*log10( mean(abs(wx')) );
+   x = (-0.5):(1/(fftsize-1)):(0.5);
+   figure;
+   h5 = plot( x, y, '-' );
+   %hold;plot( x, y, 'or' );hold;
    grid;ylabel('dB');
    xlabel('frequency rlative to 2Pi');
-   title(sprintf('%s Blackman window',header));
-   
+   title(sprintf('%s Blackman-Haris window',header));
 end
