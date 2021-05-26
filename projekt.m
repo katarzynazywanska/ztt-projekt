@@ -93,13 +93,13 @@ grid;
 % Gausa o wartości średniej 0 i wariancji 1, przeskalowanej liniowo do zadanego poziomu SNR.
 
 %SNR:
-EbN0=0:1:10;
+EbN0=3:1:13;
 snr = EbN0 + 10*log10(log2(M)) - 10*log10(sps)
-sredniaSNR=(sum(snr))./11
+
 
 awgnchannel = comm.AWGNChannel;
 awgnchannel.NoiseMethod = 'Signal to noise ratio (SNR)';
-awgnchannel.SNR = sredniaSNR; 
+awgnchannel.SNR = 8; 
 
 outsignal = awgnchannel(exchange_bytes_to_symbols);
 
@@ -161,7 +161,7 @@ grid;
 demod_bits_HARD = nrSymbolDemodulate(outsignal,'16QAM','DecisionType', 'Hard');
 BER_hard = biterr(us_data_with_crc32,demod_bits_HARD)
 
-% b) podpunkt b) trudniejszy i jeszcze nie wiem jak go zrobić xD
+% b) 
 % i) Symbolowy
 
 demod_symbols_SOFT = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Soft');
@@ -169,7 +169,7 @@ demod_symbols_SOFT = nrSymbolDemodulate(outsignal,'16QAM','DecisionType','Soft')
 
 % ii) bitowy ???
 %demodbitsSOFTbites = nrSymbolDemodulate(demodbitsSOFT,'16QAM','DecisionType','Hard')
-%demod_bits_SOFT = qamdemod(outsignal,16,'OutputType','bit'); %raczej na pewno zle
+%demod_bits_SOFT = qamdemod(outsignal,16,'OutputType','bit'); 
 
 %demod_bits_SOFT = qamdemod(outsignal,16,'OutputType','approxllr', 'UnitAveragePower',true,'NoiseVariance',noiseVar)
 %BER_soft_bits = biterr(us_data_with_crc32,demod_bits_SOFT);
