@@ -1,4 +1,5 @@
 function [error,errorbits] = sendpacket(sysp)
+close all;
 %SENDPACKET Summary of this function goes here
 %   [error,errorbits] = sendpacket(sysp)
 
@@ -19,12 +20,14 @@ data = randsrc( sysp.packet_lenght(sysp.psize), 1, [0 1] );
 % modulated symbols
 [symbols] = transmiter( data, sysp);
 
+sysp.fig = true;
+
 if sysp.fig
     %------------------------------
     % transmited signal/spectrum ploting
     %------------------------------
     %
-    qamsignals(symbols, sysp);
+    qamsignals(symbols, sysp); 
 end
 % -----------------------------------------------
 % modulator OFDM - 64 points 52 data subcarriers 
@@ -35,9 +38,12 @@ channelinput = ofdm_mod(symbols, sysp);
 %--------------------------
 % Transmit channel
 %--------------------------
+% awgn = comm.AWGNChannel;
+% awgn.NoiseMethod = 'Signal to noise ratio (SNR)';
 
 %channeloutput = awgn(chanellinput,sysp.snr,'measured');
 channeloutput = awgn( channelinput, sysp.snr );
+
 
 if sysp.fig
     %
@@ -48,7 +54,7 @@ if sysp.fig
     else
         name='PSK';
     end
-    figure();
+    figure;
     subplot(2,1,1);
     %plotspectrum(channelinput' ./(sysp.oversampling^2),0,sysp.fftsize,sprintf('OFDM %d-QAM - ',2^sysp.M) );
     plotspectrum(channelinput', 'header', sprintf('OFDM %d-%s, transmited - ',2^sysp.M,name) );
@@ -57,9 +63,8 @@ if sysp.fig
     plotspectrum(channeloutput', 'header', sprintf('OFDM %d-%s, %d dB SNR - ',2^sysp.M, name, sysp.snr) );
     % eye diagram
     eye_diagram( symbols, sysp );
-end
-
-
+end 
+    
 %--------------------------
 % Receiver
 %--------------------------
@@ -69,29 +74,37 @@ outsymbols = ofdm_demod( channeloutput, sysp );
 
 if sysp.fig
     % receiver complex symbol samples scatter ploting 
-    % (constelation ploting)
-    figure();
+    % (constelation ploting)    
+    figure;
     plot(outsymbols,'.');grid;axis([-1.5 1.5 -1.5 1.5]);title(sprintf('Received constelation, %d dB SNR',sysp.snr));
 end
 
 % demodulation R2020
-%   rxlabels = qamdemod( outsymbols, 2^sysp.M, 'gray', 'UnitAveragePower',true )'; 
+  rxlabels = qamdemod( outsymbols, 2^sysp.M, 'gray', 'UnitAveragePower',true )';
+  
 % in elier Matlab versions: R2009
-%   rxlabels = qamdemod( outsymbols, 2^sysp.M, 0, 'gray' )'; 
+% rxlabels = qamdemod( outsymbols, 2^sysp.M, 0, 'gray' )'; 
 % matrix demodulator
-rxlabels = demodulator( outsymbols, sysp );
+% rxlabels = demodulator( outsymbols, sysp );
 
 % to bin vector format
+disp('rxdata przed dekodowaniem')
 rxdatap = reshape(de2bi(rxlabels,sysp.M)', [], 1  );
+
+
 
 %--------------------------
 % Decoder
 %--------------------------
 % Decoding of protection codes
 %
-
+trellis = poly2trellis(7,[171 133]);
+tb = 7;
+rxdatap = vitdec(rxdatap,trellis,tb,'trunc','hard');
+rxdatap = rxdatap(1:length(rxdatap)/2); %usunięcie dodanych zer
 %
 % END of decoding of protection codes
+
 
 % packet error detection
 sysp.CRCdet = crc.detector('Polynomial', sysp.CRCpoly, 'InitialState', '0xFFFFFFFF');
